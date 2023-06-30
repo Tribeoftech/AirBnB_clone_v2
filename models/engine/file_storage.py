@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """This module defines a class to manage file storage for hbnb clone"""
 import json
+from os import getenv
 
 
 class FileStorage:
@@ -9,24 +10,21 @@ class FileStorage:
     __objects = {}
 
     def all(self, cls=None):
-        """
-        If cls=None, returns a dictionary of models
-        currently in storage, else returns a dictionary
-        of models with class=cls
-        """
-        # print(FileStorage.__objects)
+        """Returns a dictionary of models currently in storage"""
         if cls is None:
             return FileStorage.__objects
-
-        cls_objects = {}
-        for value in FileStorage.__objects.values():
-            if type(value) == cls:
-                cls_objects.update({value.to_dict()['__class__'] +
-                                    '.' + value.id: value})
-        return cls_objects
+        else:
+            classDict = {}
+            for val in FileStorage.__objects.values():
+                if type(val) == cls:
+                    classDict.update({val.to_dict()['__class__'] +
+                                      '.' + val.id: val})
+            return classDict
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
+        if obj.__dict__.get('_sa_instance_state'):
+            del obj.__dict__['_sa_instance_state']
         self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
 
     def save(self):
@@ -63,16 +61,13 @@ class FileStorage:
             pass
 
     def delete(self, obj=None):
-        """deletes an object from __objects"""
+        """Deletes obj from __objects"""
         if obj is None:
-            return
-        for key, value in dict(FileStorage.__objects).items():
-            if value == obj:
+            pass
+        for key, val in dict(FileStorage.__objects).items():
+            if val == obj:
                 del FileStorage.__objects[key]
 
-    def close(self):  # p1170t7
-        """
-        Calls the reload() method for de-
-        serializing the JSON file to objects.
-        """
+    def close(self):
+        """Calls reload"""
         self.reload()
