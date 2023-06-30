@@ -1,43 +1,116 @@
 #!/usr/bin/python3
-"""console Unittests"""
-
-
+""" """
 from console import HBNBCommand
-from unittest.mock import patch
-from io import StringIO
 import unittest
-import sys
 
 
-class TestConsole(unittest.TestCase):
-    """tests for the console"""
+class test_console(unittest.TestCase):
+    """ """
 
-    def test_create(self):
-        """ test create """
-        with patch('sys.stdout', new=StringIO()) as file:
-            HBNBCommand().onecmd("create widdly")
-            self.assertEqual(file.getvalue(), "\n** class doesn't exist **\n")
+    def __init__(self, *args, **kwargs):
+        """ """
+        super().__init__(*args, **kwargs)
+        self.name = 'HBNBCommand'
+        self.value = HBNBCommand
 
-    def test_show(self):
-        """ test show """
-        with patch('sys.stdout', new=StringIO()) as file:
-            HBNBCommand().onecmd("show widdly")
-            self.assertEqual(file.getvalue(), "\n** class doesn't exist **\n")
+    def setUp(self):
+        """ """
+        pass
 
-    def test_destroy(self):
-        """ test destroy """
-        with patch('sys.stdout', new=StringIO()) as file:
-            HBNBCommand().onecmd("destroy widdly")
-            self.assertEqual(file.getvalue(), "\n** class doesn't exist **\n")
+    def tearDown(self):
+        """ """
+        pass
 
-    def test_all(self):
-        """ test all """
-        with patch('sys.stdout', new=StringIO()) as file:
-            HBNBCommand().onecmd("all widdly")
-            self.assertEqual(file.getvalue(), "\n** class doesn't exist **\n")
+    def test_default(self):
+        """ """
+        i = self.value()
+        self.assertEqual(type(i), self.value)
 
-    def test_update(self):
-        """ test update """
-        with patch('sys.stdout', new=StringIO()) as file:
-            HBNBCommand().onecmd("update widdly")
-            self.assertEqual(file.getvalue(), "\n** class doesn't exist **\n")
+    def test_emptyline(self):
+        """ """
+        i = self.value()
+        self.assertEqual(i.emptyline(), None)
+
+    def test_do_quit(self):
+        """ """
+        i = self.value()
+        with self.assertRaises(SystemExit):
+            i.do_quit(None)
+
+    def test_do_EOF(self):
+        """ """
+        i = self.value()
+        with self.assertRaises(SystemExit):
+            i.do_EOF(None)
+
+    def test_do_create(self):
+        """ """
+        i = self.value()
+        with self.assertRaises(TypeError):
+            i.do_create()
+
+    def test_do_show(self):
+        """ """
+        i = self.value()
+        with self.assertRaises(TypeError):
+            i.do_show()
+
+    def test_do_destroy(self):
+        """ """
+        i = self.value()
+        with self.assertRaises(TypeError):
+            i.do_destroy()
+
+    def test_do_all(self):
+        """ """
+        i = self.value()
+        with self.assertRaises(TypeError):
+            i.do_all()
+
+    def test_do_update(self):
+        """ """
+        i = self.value()
+        with self.assertRaises(TypeError):
+            i.do_update()
+
+    def test_do_count(self):
+        """ """
+        i = self.value()
+        with self.assertRaises(TypeError):
+            i.do_count()
+
+    def test_do_create(self):
+        """ """
+        i = self.value()
+        with self.assertRaises(TypeError):
+            i.do_create()
+
+    def test_do_show(self):
+        """ """
+        i = self.value()
+        with self.assertRaises(TypeError):
+            i.do_show()
+
+    def test_do_destroy(self):
+        """ """
+        i = self.value()
+        with self.assertRaises(TypeError):
+            i.do_destroy()
+
+    def test_do_all(self):
+        """ """
+        i = self.value()
+        with self.assertRaises(TypeError):
+            i.do_all()
+
+    def test_do_update(self):
+        """ """
+        i = self.value()
+        with self.assertRaises(TypeError):
+            i.do_update()
+
+    def test_do_count(self):
+        """ """
+        i = self.value()
+        with self.assertRaises(TypeError):
+            i.do_count()

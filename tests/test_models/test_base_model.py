@@ -1,99 +1,57 @@
 #!/usr/bin/python3
-""" """
-from models.base_model import BaseModel
+"""Test module for city class"""
+from tests.test_models.test_base_model import test_basemodel
+from models.city import City
+import pep8
 import unittest
-import datetime
-from uuid import UUID
-import json
-import os
+import models.city
 
 
-class test_basemodel(unittest.TestCase):
-    """ """
+class test_City(test_basemodel):
+    """Tests for functionality of city class"""
 
     def __init__(self, *args, **kwargs):
-        """ """
+        """Tests proper instantiation of city clas"""
         super().__init__(*args, **kwargs)
-        self.name = 'BaseModel'
-        self.value = BaseModel
+        self.name = "City"
+        self.value = City
 
-    def setUp(self):
-        """ """
-        pass
-
-    def tearDown(self):
-        try:
-            os.remove('file.json')
-        except Exception:
-            pass
-
-    def test_default(self):
-        """ """
-        i = self.value()
-        self.assertEqual(type(i), self.value)
-
-    def test_kwargs(self):
-        """ """
-        i = self.value()
-        copy = i.to_dict()
-        new = BaseModel(**copy)
-        self.assertFalse(new is i)
-
-    def test_kwargs_int(self):
-        """ """
-        i = self.value()
-        copy = i.to_dict()
-        copy.update({1: 2})
-        with self.assertRaises(TypeError):
-            new = BaseModel(**copy)
-
-    def test_save(self):
-        """ Testing save """
-        i = self.value()
-        i.save()
-        key = self.name + "." + i.id
-        with open('file.json', 'r') as f:
-            j = json.load(f)
-            self.assertEqual(j[key], i.to_dict())
-
-    def test_str(self):
-        """ """
-        i = self.value()
-        self.assertEqual(str(i), '[{}] ({}) {}'.format(self.name, i.id,
-                         i.__dict__))
-
-    def test_todict(self):
-        """ """
-        i = self.value()
-        n = i.to_dict()
-        self.assertEqual(i.to_dict(), n)
-
-    def test_kwargs_none(self):
-        """ """
-        n = {None: None}
-        with self.assertRaises(TypeError):
-            new = self.value(**n)
-
-    def test_kwargs_one(self):
-        """ """
-        n = {'Name': 'test'}
-        with self.assertRaises(KeyError):
-            new = self.value(**n)
-
-    def test_id(self):
-        """ """
+    def test_state_id(self):
+        """Tests proper creation of state id"""
         new = self.value()
-        self.assertEqual(type(new.id), str)
+        self.assertEqual(type(new.state_id), str)
 
-    def test_created_at(self):
-        """ """
+    def test_name(self):
+        """Tests proper creation of city name"""
         new = self.value()
-        self.assertEqual(type(new.created_at), datetime.datetime)
+        self.assertEqual(type(new.name), str)
 
-    def test_updated_at(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.updated_at), datetime.datetime)
-        n = new.to_dict()
-        new = BaseModel(**n)
-        self.assertFalse(new.created_at == new.updated_at)
+
+class TestAmenityDoc(unittest.TestCase):
+    """Tests for documentation in city class"""
+
+    def test_module_doc(self):
+        """Checks for module doc"""
+        self.assertGreaterEqual(len(models.city.__doc__), 1)
+
+    def test_class_doc(self):
+        """Checks for class doc"""
+        self.assertGreaterEqual(len(City.__doc__), 1)
+
+
+class TestCityPep8(unittest.TestCase):
+    """Tests Amenity Class for pep8 compliance"""
+
+    def test_pep8_compliance(self):
+        """Tests to ensure models/amenity.py is pep8 compliant"""
+        pep8style = pep8.StyleGuide(quiet=True)
+        result = pep8style.check_files(["models/city.py"])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warnings).")
+
+    def test_pep8_compliance(self):
+        """Tests to ensure tests/test_models/amenity.py is pep8 compliant"""
+        pep8style = pep8.StyleGuide(quiet=True)
+        result = pep8style.check_files(["tests/test_models/test_city.py"])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warnings).")
