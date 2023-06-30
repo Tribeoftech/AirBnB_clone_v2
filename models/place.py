@@ -46,18 +46,18 @@ class Place(BaseModel, Base):
             for review in storage.all(Review).values():
                 if review.getattr('place_id') == self.id:
                     reviewList.append(review)
-            return reviewList
+            return(reviewList)
 
         @property
         def amenities(self):
-            """ Method that gets amenities """
+            """ Method that gets amenities"""
             ''' for row in place_amenity: row.place_id and amenity.id
                  == row.amenity_id:'''
             amenList = []
-            for amenity in storage.all(Amenity).values():
+            for amenity in storage.all(Amenity).value():
                 if self.id == amenity.place_id:
                     amenList.append(amenity)
-            return amenList
+            return(amenList)
 
         @amenities.setter
         def amenities(self, obj):
