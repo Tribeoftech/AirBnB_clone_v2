@@ -1,8 +1,8 @@
 #!/usr/bin/python3
-'''This modules defines DBStorage class'''
+'''This module defines DBStorage class'''
 
 from models.base_model import BaseModel, Base
-from sqlalchemy import (create_engine)
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from os import getenv
 
@@ -28,7 +28,7 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        """Method to retrieve all objects depending of the class name"""
+        """Method to retrieve all objects depending on the class name"""
         from models.user import User
         from models.place import Place
         from models.city import City
@@ -48,7 +48,7 @@ class DBStorage:
             for obj in allClassObjs:
                 key = type(obj).__name__ + "." + obj.id
                 newDict[key] = obj
-            return (newDict)
+            return newDict
         else:
             allDicts = {}
 
@@ -69,7 +69,7 @@ class DBStorage:
             for dicts in dictList:
                 allDicts.update(dicts)
 
-            return(allDicts)
+            return allDicts
 
     def new(self, obj):
         '''new obj for sql'''
