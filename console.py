@@ -3,12 +3,32 @@
 import cmd
 import sys
 from models.base_model import BaseModel
+from models.__init__ import storage
 from models.user import User
 from models.place import Place
 from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
+import os
+
+
+def checkInt(str, neg):
+    '''Checks if string is an integer'''
+    if neg == 1 and str.startswith('-'):
+        if str[1:].isnumeric():
+            return True, str
+    elif str.isnumeric():
+        return True
+
+
+def escQuotes(str):
+    '''Checks escapes quotes'''
+    for i, char in enumerate(str):
+        if char == '"':
+            if str[i - 1] != '\\':
+                return False
+    return True
 
 
 class HBNBCommand(cmd.Cmd):
@@ -18,16 +38,16 @@ class HBNBCommand(cmd.Cmd):
     prompt = '(hbnb) ' if sys.__stdin__.isatty() else ''
 
     classes = {
-               'BaseModel': BaseModel, 'User': User, 'Place': Place,
-               'State': State, 'City': City, 'Amenity': Amenity,
-               'Review': Review
-              }
+        'BaseModel': BaseModel, 'User': User, 'Place': Place,
+        'State': State, 'City': City, 'Amenity': Amenity,
+        'Review': Review
+    }
     dot_cmds = ['all', 'count', 'show', 'destroy', 'update']
     types = {
-             'number_rooms': int, 'number_bathrooms': int,
-             'max_guest': int, 'price_by_night': int,
-             'latitude': float, 'longitude': float
-            }
+        'number_rooms': int, 'number_bathrooms': int,
+        'max_guest': int, 'price_by_night': int,
+        'latitude': float, 'longitude': float
+    }
 
     def preloop(self):
         """Prints if isatty is false"""
@@ -72,7 +92,7 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] == '{' and pline[-1] == '}' \
+                    if pline[0] == '{' and pline[-1] == '}'\
                             and type(eval(pline)) is dict:
                         _args = pline
                     else:
@@ -114,25 +134,50 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-        from models import storage
         if not args:
             print("** class name missing **")
             return
-        args = args.partition(' ')
-        if args[0] not in HBNBCommand.classes:
+
+        classParams = args.split()
+        if classParams[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        params = args[2].split(' ')
-        new_instance = HBNBCommand.classes[args[0]]()
-        param_dict = {}
-        for param in params:
-            param = param.partition("=")
-            param_dict[param[0]] = param[2].replace('"', '').replace('_', ' ')
-        new_instance.__dict__.update(**param_dict)
 
-        storage.new(new_instance)
-        print(new_instance.id)
-        new_instance.save()
+        elif len(classParams) == 1:
+            newInstance = HBNBCommand.classes[classParams[0]]()
+            print(newInstance.id)
+            storage.new(newInstance)
+            storage.save()
+
+        else:
+            newInstance = HBNBCommand.classes[classParams[0]]()
+            for params in classParams[1:]:
+                paramParse = params.split('=', 1)
+                key = paramParse[0]
+                if len(paramParse) > 1:
+                    value = paramParse[1]
+                else:
+                    continue
+
+                if len(paramParse) > 1:
+                    num = value.split('.')
+                    if checkInt(value, 1):
+                        newInstance.__dict__[key] = int(value)
+
+                    elif (len(num) > 1 and checkInt(
+                            num[0], 1) and checkInt(num[1], 0)):
+                        newInstance.__dict__[key] = float(value)
+
+                    elif value.startswith('"') and value.endswith('"'):
+                        noQuote = value[1:-1]
+
+                        if escQuotes(noQuote):
+                            noQuote = noQuote.replace('_', ' ')
+                            noQuote = noQuote.replace('\"', '"')
+                            newInstance.__dict__[key] = noQuote
+        print(newInstance.id)
+        storage.new(newInstance)
+        storage.save()
 
     def help_create(self):
         """ Help information for the create method """
@@ -141,7 +186,6 @@ class HBNBCommand(cmd.Cmd):
 
     def do_show(self, args):
         """ Method to show an individual object """
-        from models import storage
         new = args.partition(" ")
         c_name = new[0]
         c_id = new[2]
@@ -164,7 +208,7 @@ class HBNBCommand(cmd.Cmd):
 
         key = c_name + "." + c_id
         try:
-            print(storage._FileStorage__objects[key])
+            print(storage.all()[key])
         except KeyError:
             print("** no instance found **")
 
@@ -175,7 +219,6 @@ class HBNBCommand(cmd.Cmd):
 
     def do_destroy(self, args):
         """ Destroys a specified object """
-        from models import storage
         new = args.partition(" ")
         c_name = new[0]
         c_id = new[2]
@@ -197,7 +240,7 @@ class HBNBCommand(cmd.Cmd):
         key = c_name + "." + c_id
 
         try:
-            del (storage.all()[key])
+            del(storage.all()[key])
             storage.save()
         except KeyError:
             print("** no instance found **")
@@ -209,23 +252,22 @@ class HBNBCommand(cmd.Cmd):
 
     def do_all(self, args):
         """ Shows all objects, or all objects of a class"""
-        from models import storage
+        import models
         print_list = []
-        objects = storage.all()
 
         if args:
             args = args.split(' ')[0]  # remove possible trailing args
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in objects.items():
+            for k, v in models.storage.all().items():
                 if k.split('.')[0] == args:
                     print_list.append(str(v))
         else:
-            for k, v in objects.items():
+            for k, v in models.storage.all().items():
                 print_list.append(str(v))
 
-        print(print_list)
+        print('[%s]' % ', '.join(map(str, print_list)))
 
     def help_all(self):
         """ Help information for the all command """
@@ -234,7 +276,6 @@ class HBNBCommand(cmd.Cmd):
 
     def do_count(self, args):
         """Count current number of class instances"""
-        from models import storage
         count = 0
         for k, v in storage._FileStorage__objects.items():
             if args == k.split('.')[0]:
@@ -247,7 +288,6 @@ class HBNBCommand(cmd.Cmd):
 
     def do_update(self, args):
         """ Updates a certain object with new info """
-        from models import storage
         c_name = c_id = att_name = att_val = kwargs = ''
 
         # isolate cls from id/args, ex: (<cls>, delim, <id/args>)
