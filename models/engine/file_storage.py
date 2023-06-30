@@ -9,15 +9,21 @@ class FileStorage:
     __objects = {}
 
     def all(self, cls=None):
-        """Returns a dictionary of models currently in storage"""
-        if cls:
-            temp = {}
-            for key in FileStorage.__objects.keys():
-                if cls.__name__ in key:
-                    temp[key] = FileStorage.__objects[key]
-            return temp
-        else:
+        """
+        If cls=None, returns a dictionary of models
+        currently in storage, else returns a dictionary
+        of models with class=cls
+        """
+        # print(FileStorage.__objects)
+        if cls is None:
             return FileStorage.__objects
+
+        cls_objects = {}
+        for value in FileStorage.__objects.values():
+            if type(value) == cls:
+                cls_objects.update({value.to_dict()['__class__'] +
+                                    '.' + value.id: value})
+        return cls_objects
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
@@ -43,10 +49,10 @@ class FileStorage:
         from models.review import Review
 
         classes = {
-            'BaseModel': BaseModel, 'User': User, 'Place': Place,
-            'State': State, 'City': City, 'Amenity': Amenity,
-            'Review': Review
-        }
+                    'BaseModel': BaseModel, 'User': User, 'Place': Place,
+                    'State': State, 'City': City, 'Amenity': Amenity,
+                    'Review': Review
+                  }
         try:
             temp = {}
             with open(FileStorage.__file_path, 'r') as f:
@@ -57,13 +63,16 @@ class FileStorage:
             pass
 
     def delete(self, obj=None):
-        '''Deletes an object from __objects'''
-        if obj:
-            for key in self.__objects:
-                if self.__objects[key] == obj:
-                    del self.__objects[key]
-                    return
+        """deletes an object from __objects"""
+        if obj is None:
+            return
+        for key, value in dict(FileStorage.__objects).items():
+            if value == obj:
+                del FileStorage.__objects[key]
 
-    def close(self):
-        '''closes json'''
+    def close(self):  # p1170t7
+        """
+        Calls the reload() method for de-
+        serializing the JSON file to objects.
+        """
         self.reload()
