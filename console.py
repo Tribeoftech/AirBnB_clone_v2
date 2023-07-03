@@ -239,7 +239,7 @@ class HBNBCommand(cmd.Cmd):
 
         key = c_name + "." + c_id
 
-        try:
+        try: 
             del(storage.all()[key])
             storage.save()
         except KeyError:
