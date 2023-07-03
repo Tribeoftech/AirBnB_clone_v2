@@ -5,7 +5,23 @@ from models.base_model import BaseModel, Base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from os import getenv
+<<<<<<< HEAD
+from models.base_model import Base
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
+from models.user import User
+from models.amenity import Amenity
 
+all_classes = {'State': State, 'City': City,
+               'User': User, 'Place': Place,
+               'Review': Review, 'Amenity': Amenity
+               }
+DROP DATABASE IF EXISTS hbnb_dev_db;
+=======
+
+>>>>>>> 85f5f64ea7707feb83ba931d99c08abbfb9b6b99
 
 class DBStorage:
     '''Defining class DBStorage'''
