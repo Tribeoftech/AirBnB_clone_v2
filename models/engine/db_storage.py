@@ -15,7 +15,7 @@ all_classes = {'State': State, 'City': City,
                'User': User, 'Place': Place,
                'Review': Review, 'Amenity': Amenity
                }
-
+DROP DATABASE IF EXISTS hbnb_dev_db;
 
 class DBStorage:
     """database storage engine"""
