@@ -2,7 +2,7 @@
 """ Review module for the HBNB project """
 from models.base_model import BaseModel, Base
 from sqlalchemy import String, Column, ForeignKey
-
+from sqlalchemy.ext.declarative import declarative_base
 
 class Review(BaseModel, Base):
     """ Review class to store review content, place id, and user id """
