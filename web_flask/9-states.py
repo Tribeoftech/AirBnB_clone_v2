@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-'''Flask app for states'''
+'''Flask-app for states'''
 
 
 from flask import Flask, render_template
