@@ -1,25 +1,29 @@
 #!/usr/bin/python3
-'''Starts a Flask Web app'''
-from flask import Flask
+""" Starts a flask web app that returns a greeting """
 
+
+from flask import Flask
 
 app = Flask(__name__)
 
 
 @app.route('/', strict_slashes=False)
-def hello():
+def greeting():
+    """ function that returns greeting """
     return 'Hello HBNB!'
 
 
 @app.route('/hbnb', strict_slashes=False)
-def display():
+def hbnb():
+    """ function that returns a hbnb message """
     return 'HBNB'
 
 
 @app.route('/c/<text>', strict_slashes=False)
-def cText(text):
+def c_text(text):
+    """ function that return message, but with a C """
     return 'C {}'.format(text.replace('_', ' '))
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(host='0.0.0.0', port=5000)

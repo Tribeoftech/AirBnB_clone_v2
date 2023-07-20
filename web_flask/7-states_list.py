@@ -1,25 +1,20 @@
 #!/usr/bin/python3
-'''Flask app for states'''
-
-
+"""Script that starts a Flask web app"""
 from flask import Flask, render_template
 from models import storage
-from models.state import State
 
 app = Flask(__name__)
-app.url_map.strict_slashes = False
-
-
-@app.route('/states_list')
-def statesList():
-    state = storage.all(State)
-    return render_template('7-states_list.html', States=state)
 
 
 @app.teardown_appcontext
-def teardown(context):
+def teardown(exception):
     storage.close()
 
 
+@app.route('/states_list', strict_slashes=False)
+def states_list():
+    states = storage.all("State")
+    return render_template('7-states_list.html', states=states.values())
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port='5000')
+    app.run(host='0.0.0.0', port=5000)
